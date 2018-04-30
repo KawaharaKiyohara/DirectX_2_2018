@@ -11,7 +11,6 @@ SkinModel g_teapotModel;						//ティーポットモデル。
 
 CMatrix g_viewMatrix = CMatrix::Identity();		//ビュー行列。
 CMatrix g_projMatrix = CMatrix::Identity();		//プロジェクション行列。
-CMatrix g_worldMatrix = CMatrix::Identity();	//ワールド行列。
 
 ///////////////////////////////////////////////////////////////////
 // DirectXの終了処理。
@@ -118,6 +117,7 @@ void Render()
 		g_viewMatrix,							//ビュー行列。
 		g_projMatrix							//プロジェクション行列。
 	);
+
 	//ここまでモデル表示に関係するプログラム。
 	///////////////////////////////////////////
 	g_graphicsEngine->EndRender();
@@ -151,8 +151,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	);
 	/////////////////////////////////////////////////////////
 	//ティーポットモデルの初期化。
-	g_teapotModel.Init(L"Resource/modelData/teapot.cmo");
-	
+	g_teapotModel.Init(L"Resource/modelData/teapot.cmo");	
+
 	//メッセージ構造体の変数msgを初期化。
 	MSG msg = { 0 };
 	while (WM_QUIT != msg.message)	//メッセージループ
