@@ -1,155 +1,170 @@
-/*!
- *@brief	シェーダーのチュートリアル00
- */
 #include "stdafx.h"
-#include "Camera.h"
-#include "Ball.h"
-#include "Skelton.h"
+#include "graphics/SkinModel.h"
+//Hands-On 1 skeleton.hをインクルード。
+#include "graphics/Skeleton.h"
 
-//-----------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////
 // グローバル変数。
-//-----------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////
+HWND			g_hWnd = NULL;				//ウィンドウハンドル。
+GraphicsEngine* g_graphicsEngine = NULL;	//グラフィックスエンジン。
 
-const int				LIGHT_NUM = 4;
-D3DXVECTOR4 			g_diffuseLightDirection[LIGHT_NUM];	//ライトの方向。
-D3DXVECTOR4				g_diffuseLightColor[LIGHT_NUM];		//ライトの色。
-D3DXVECTOR4				g_ambientLight;						//環境光
 
-Camera camera;				//カメラ。
+CMatrix g_viewMatrix = CMatrix::Identity();		//ビュー行列。
+CMatrix g_projMatrix = CMatrix::Identity();		//プロジェクション行列。
+CMatrix g_worldMatrix = CMatrix::Identity();	//ワールド行列。
 
-const int NUM_BALL = 7;
-Ball ball[NUM_BALL];	//ボール。
-Skelton ballSkelton;	//ボールのスケルトン。
-
-enum EBone {
-	eBonePelvis,
-	eBoneLeftFoot ,
-	eBoneRightFoot ,
-	eBoneBody,
-	eBoneHead,
-	eBoneLeftHand,
-	eBoneRightHand,
-};
-/*!-----------------------------------------------------------------------------
- *@brief	ライトを更新。
- -----------------------------------------------------------------------------*/
-void UpdateLight()
+///////////////////////////////////////////////////////////////////
+// DirectXの終了処理。
+///////////////////////////////////////////////////////////////////
+void ReleaseDirectX()
 {
-	g_diffuseLightDirection[0] = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
-
-	//ディフューズライト。
-	g_diffuseLightColor[0] = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
-
-//環境光。
-g_ambientLight = D3DXVECTOR4(0.2f, 0.2f, 0.2f, 1.0f);
+	
 }
-//-----------------------------------------------------------------------------
-// Name: ゲームを初期化。
-//-----------------------------------------------------------------------------
-void Init()
+///////////////////////////////////////////////////////////////////
+//メッセージプロシージャ。
+//hWndがメッセージを送ってきたウィンドウのハンドル。
+//msgがメッセージの種類。
+//wParamとlParamは引数。今は気にしなくてよい。
+///////////////////////////////////////////////////////////////////
+LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	//ライトを初期化。
-	ZeroMemory(g_diffuseLightDirection, sizeof(g_diffuseLightDirection));
-	ZeroMemory(g_diffuseLightColor, sizeof(g_diffuseLightColor));
-
-
-	//スケルトンを構築。
-	//Lesson 1	スケルトンの構築について説明する。
-	//骨盤　これがルート
-	Bone bone;
-	D3DXQuaternionIdentity(&bone.rotation);
-	bone.position.x = 0.0f;
-	bone.position.y = 0.0f;
-	bone.position.z = 0.0f;
-	ballSkelton.AddBone(-1, &bone);
-	//左足
-	bone.position.x = -0.5f;
-	bone.position.y = -0.5f;
-	bone.position.z = 0.0f;
-	ballSkelton.AddBone(0, &bone);
-	//右足。
-	bone.position.x = 0.5f;
-	bone.position.y = -0.5f;
-	bone.position.z = 0.0f;
-	ballSkelton.AddBone(0, &bone);
-	//胴体
-	bone.position.x = 0.0f;
-	bone.position.y = 0.5f;
-	bone.position.z = 0.0f;
-	ballSkelton.AddBone(0, &bone);
-	//頭
-	bone.position.x = 0.0f;
-	bone.position.y = 1.0f;
-	bone.position.z = 0.0f;
-	ballSkelton.AddBone(3, &bone);
-	//左手
-	bone.position.x = -0.5f;
-	bone.position.y = 0.5f;
-	bone.position.z = 0.0f;
-	ballSkelton.AddBone(3, &bone);
-	//右足
-	bone.position.x = 0.5f;
-	bone.position.y = 0.5f;
-	bone.position.z = 0.0f;
-	ballSkelton.AddBone(3, &bone);
-
-
-	//ボールを初期化。
-	for (int i = 0; i < NUM_BALL; i++) {
-		ball[i].Init(&ballSkelton, i);
-	}
-	//カメラの初期化。
-	camera.Init();
-
-}
-//-----------------------------------------------------------------------------
-// Name: 描画処理。
-//-----------------------------------------------------------------------------
-VOID Render()
-{
-	// 画面をクリア。
-	g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 255), 1.0f, 0);
-	//シーンの描画開始。
-	g_pd3dDevice->BeginScene();
-	//トラを描画。
-	for (int i = 0; i < NUM_BALL; i++) {
-		ball[i].Render(
-			g_pd3dDevice,
-			camera.GetViewMatrix(),
-			camera.GetProjectionMatrix(),
-			g_diffuseLightDirection,
-			g_diffuseLightColor,
-			g_ambientLight,
-			LIGHT_NUM
-			);
+	//送られてきたメッセージで処理を分岐させる。
+	switch (msg)
+	{
+	case WM_DESTROY:
+		ReleaseDirectX();
+		PostQuitMessage(0);
+		break;	
+	default:
+		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
-	// シーンの描画終了。
-	g_pd3dDevice->EndScene();
-	// バックバッファとフロントバッファを入れ替える。
-	g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
+	return 0;
 }
-/*!-----------------------------------------------------------------------------
- *@brief	更新処理。
- -----------------------------------------------------------------------------*/
+
+///////////////////////////////////////////////////////////////////
+// ウィンドウの初期化。
+///////////////////////////////////////////////////////////////////
+void InitWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+{
+	//ウィンドウクラスのパラメータを設定(単なる構造体の変数の初期化です。)
+	WNDCLASSEX wc =
+	{
+		sizeof(WNDCLASSEX),		//構造体のサイズ。
+		CS_CLASSDC,				//ウィンドウのスタイル。
+								//ここの指定でスクロールバーをつけたりできるが、ゲームでは不要なのでCS_CLASSDCでよい。
+		MsgProc,				//メッセージプロシージャ(後述)
+		0,						//0でいい。
+		0,						//0でいい。
+		GetModuleHandle(NULL),	//このクラスのためのウインドウプロシージャがあるインスタンスハンドル。
+								//何も気にしなくてよい。
+		NULL,					//アイコンのハンドル。アイコンを変えたい場合ここを変更する。とりあえずこれでいい。
+		NULL,					//マウスカーソルのハンドル。NULLの場合はデフォルト。
+		NULL,					//ウィンドウの背景色。NULLの場合はデフォルト。
+		NULL,					//メニュー名。NULLでいい。
+		TEXT("Sample_01"),		//ウィンドウクラスに付ける名前。
+		NULL					//NULLでいい。
+	};
+	//ウィンドウクラスの登録。
+	RegisterClassEx(&wc);
+
+	// ウィンドウの作成。
+	g_hWnd = CreateWindow(
+		TEXT("Sample_01"),		//使用するウィンドウクラスの名前。
+								//先ほど作成したウィンドウクラスと同じ名前にする。
+		TEXT("Sample_01"),		//ウィンドウの名前。ウィンドウクラスの名前と別名でもよい。
+		WS_OVERLAPPEDWINDOW,	//ウィンドウスタイル。ゲームでは基本的にWS_OVERLAPPEDWINDOWでいい、
+		0,						//ウィンドウの初期X座標。
+		0,						//ウィンドウの初期Y座標。
+		(UINT)FRAME_BUFFER_W,	//ウィンドウの幅。
+		(UINT)FRAME_BUFFER_H,	//ウィンドウの高さ。
+		NULL,					//親ウィンドウ。ゲームでは基本的にNULLでいい。
+		NULL,					//メニュー。今はNULLでいい。
+		hInstance,				//アプリケーションのインスタンス。
+		NULL
+	);
+
+	ShowWindow(g_hWnd, nCmdShow);
+
+}
+
+///////////////////////////////////////////////////////////////////
+// 毎フレーム呼ばれるゲームの更新処理。
+///////////////////////////////////////////////////////////////////
 void Update()
 {
-	//ライトの更新。
-	UpdateLight();
-	//カメラの更新
-	camera.Update();
-	//Lesson-2 CalcGlobalPoseについて説明する。
-	//グローバルポーズの更新
-	ballSkelton.CalcGlobalPose();
+}
+///////////////////////////////////////////////////////////////////
+// 毎フレーム呼ばれるゲームの描画処理。
+///////////////////////////////////////////////////////////////////
+void Render()
+{
 	
-	//Hands-On 1 ボーンを動かす。
-	
-	//Hands-On 2 ボーンを回す。
+	g_graphicsEngine->BegineRender();
+	///////////////////////////////////////////
+	//ここからモデル表示のプログラム。
+	//3Dモデルを描画する。
+
+
+	//ここまでモデル表示に関係するプログラム。
+	///////////////////////////////////////////
+	g_graphicsEngine->EndRender();
 	
 }
-//-----------------------------------------------------------------------------
-//ゲームが終了するときに呼ばれる処理。
-//-----------------------------------------------------------------------------
-void Terminate()
+
+///////////////////////////////////////////////////////////////////
+// ウィンドウプログラムのメイン関数。
+///////////////////////////////////////////////////////////////////
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
+	//ウィンドウの初期化。
+	InitWindow(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+
+	//DirectXの初期化。
+	g_graphicsEngine = new GraphicsEngine();
+	g_graphicsEngine->Init(g_hWnd);
+	
+	//カメラ行列を作成。
+	g_viewMatrix.MakeLookAt(
+		{ 0.0f, 3000.0f, 5000.0f },		//視点。
+		{ 0.0f, 1000.0f, 0.0f },		//注視点。
+		{ 0.0f, 1.0f, 0.0f }			//上方向。
+	);
+	//プロジェクション行列を作成。
+	g_projMatrix.MakeProjectionMatrix(
+		CMath::DegToRad(60.0f),				//画角。
+		FRAME_BUFFER_W/FRAME_BUFFER_H ,		//アスペクト比。
+		1.0f,								//近平面。
+		10000.0f								//遠平面。
+	);
+
+	//Hands-On 2 tksファイルをロード。
+	Skeleton skeleton;
+	skeleton.Load(L"Assets/modelData/unityChan.tks");
+	//Hands-On 3 ロードできていることを確認する。
+	int numBone = skeleton.GetNumBones();
+	for (int i = 0; i < numBone; i++) {
+		wchar_t boneName[256];
+		swprintf(boneName, L"%s\n", skeleton.GetBone(i)->GetName());
+		OutputDebugStringW(boneName);
+	}
+
+	//メッセージ構造体の変数msgを初期化。
+	MSG msg = { 0 };
+	while (WM_QUIT != msg.message)	//メッセージループ
+	{
+		//ウィンドウからのメッセージを受け取る。
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else {
+			//更新処理。
+			Update();
+			//描画処理。
+			Render();
+		}
+	}
 }
