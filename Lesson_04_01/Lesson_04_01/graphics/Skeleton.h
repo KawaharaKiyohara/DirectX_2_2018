@@ -103,10 +103,7 @@ public:
 	{
 		return m_children;
 	}
-	const CMatrix& GetOffsetLocalMatrix() const
-	{
-		return m_offsetLocalMatrix;
-	}
+	
 	/*!
 	 *@brief	名前の取得。
 	 */
@@ -131,7 +128,6 @@ private:
 	CMatrix			m_invBindPose;	//!<バインドポーズの逆行列。
 	CMatrix			m_localMatrix = CMatrix::Identity();	//!<ローカル行列。
 	CMatrix			m_worldMatrix = CMatrix::Identity();	//!<ワールド行列。
-	CMatrix			m_offsetLocalMatrix;
 	CVector3		m_positoin = CVector3::Zero();		//!<このボーンのワールド空間での位置。最後にCalcWorldTRSを実行したときの結果が格納されている。
 	CVector3		m_scale = CVector3::One();			//!<このボーンの拡大率。最後にCalcWorldTRSを実行したときの結果が格納されている。
 	CQuaternion		m_rotation = CQuaternion::Identity();	//!<このボーンの回転。最後にCalcWorldTRSを実行したときの結果が格納されている。
