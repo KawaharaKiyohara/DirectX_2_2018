@@ -66,7 +66,18 @@ void AnimationPlayController::Update(float deltaTime, Animation* animation)
 		}
 		//現在再生中のキーフレームを取ってくる。
 		Keyframe* keyframe = keyFrameList.at(m_currentKeyFrameNo);
-		m_boneMatrix[keyframe->boneIndex] = keyframe->transform;
+		if (keyframe->boneIndex < m_boneMatrix.size()) {
+			m_boneMatrix[keyframe->boneIndex] = keyframe->transform;
+		}
+		else {
+#ifdef _DEBUG			
+			MessageBox(NULL, "AnimationPlayController::Update : 存在しないボーンに値を書き込もうとしています。次のような原因が考えられます。\n"
+				"① tkaファイルを出力する時に、選択したルートボーンがスケルトンのルートボーンと異なっている。\n"
+				"② 異なるスケルトンのアニメーションクリップを使っている。\n"
+				"もう一度tkaファイルを出力しなおしてください。", "error", MB_OK);
+			std::abort();
+#endif
+		}
 	}
 }
 

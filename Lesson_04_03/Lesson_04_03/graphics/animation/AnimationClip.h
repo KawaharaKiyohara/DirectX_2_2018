@@ -43,16 +43,8 @@ struct KeyframeRow {
 */
 class AnimationClip  {
 public:
-	/*!
-		*@brief	ボーンのフリーズ情報。
-		*/
-	struct SFreezeBoneInfo {
-		int boneNo;		//!<フリーズさせるボーン番号。
-		bool freezeX;	//!<X方向の移動をフリーズさせる？
-		bool freezeY;	//!<Y方向の移動をフリーズさせる？
-		bool freezeZ;	//!<Z方向の移動をフリーズさせる？
-	};
-	typedef std::vector<Keyframe*>		keyFramePtrList;
+	//タイプ量が長ったらしくて、うざいのでstd::vector<KeyFrame*>の別名定義。
+	using keyFramePtrList = std::vector<Keyframe*>;
 	/*!
 	* @brief	コンストラクタ
 	*/
@@ -60,15 +52,14 @@ public:
 	{
 	}
 	/*!
-		*@brief	デストラクタ。
-		*/
+	*@brief	デストラクタ。
+	*/
 	~AnimationClip();
 	/*!
-		*@brief	アニメーションクリップをロード。
-		*@param[in]	filePath	ファイルパス。
-		*@param[in]	clipName	クリップ名。
-		*/
-	void Load(const wchar_t* filePath, const wchar_t* cliipName = nullptr);
+	*@brief	アニメーションクリップをロード。
+	*@param[in]	filePath	ファイルパス。
+	*/
+	void Load(const wchar_t* filePath);
 
 	/*!
 	*@brief	ループする？
@@ -95,28 +86,13 @@ public:
 	{
 		return *m_topBoneKeyFramList;
 	}
-	/*!
-	*@brief	クリップ名を取得。
-	*/
-	const wchar_t* GetName() const
-	{
-		return m_clipName.c_str();
-	}
-	
-	/*!
-	*@brief	アニメーションクリップはロード済み？
-	*/
-	bool IsLoaded() const
-	{
-		return m_loaded;
-	}
 private:
-	using KeyframePtr = std::unique_ptr<Keyframe>;
-	std::wstring m_clipName;	//!<アニメーションクリップの名前。
-	bool m_isLoop = false;	//!<ループフラグ。
-	std::vector<KeyframePtr>		m_keyframes;				//キーフレーム。
-	std::vector<keyFramePtrList>	m_keyFramePtrListArray;		//ボーンごとのキーフレームのリストを管理するための配列。
-	keyFramePtrList*				m_topBoneKeyFramList = nullptr;
-	bool m_loaded = false;	//アニメーションクリップがロードされている？
+	
+	bool m_isLoop = false;									//!<ループフラグ。
+	std::vector<Keyframe*> m_keyframes;						//全てのキーフレーム。
+	std::vector<keyFramePtrList> m_keyFramePtrListArray;	//ボーンごとのキーフレームのリストを管理するための配列。
+															//例えば、m_keyFramePtrListArray[0]は0番目のボーンのキーフレームのリスト、
+															//m_keyFramePtrListArray[1]は1番目のボーンのキーフレームのリストといった感じ。
+	keyFramePtrList* m_topBoneKeyFramList = nullptr;
 };
-using AnimationClipPtr = std::unique_ptr<AnimationClip>;
+

@@ -40,24 +40,6 @@ public:
 		PlayCommon(m_animationClips[clipNo], interpolateTime);
 	}
 	/*!
-	*@brief	アニメーションクリップのループフラグを設定します。
-	*@param[in]	clipName	アニメーションクリップの名前。
-	*@param[in]	flag		フラグ。
-	*/
-	void SetAnimationClipLoopFlag(const wchar_t* clipName, bool flag)
-	{
-		auto it = std::find_if(
-			m_animationClips.begin(),
-			m_animationClips.end(),
-			[clipName](auto& clip) {return clip->GetName() == clipName; }
-		);
-		if (it == m_animationClips.end()) {
-			//見つからなかった。
-			return;
-		}
-		(*it)->SetLoopFlag(flag);
-	}
-	/*!
 	* @brief	アニメーションの再生中？
 	*/
 	bool IsPlaying() const
@@ -74,32 +56,10 @@ public:
 	*@param[in]	deltaTime		アニメーションを進める時間(単位：秒)。
 	*/
 	void Update(float deltaTime);
-	/*!
-	*@brief	アニメーションイベントリスナーを登録。
-	*@return
-	* 登録されたリスナー。
-	*/
-	void AddAnimationEventListener(AnimationEventListener eventListener)
-	{
-		m_animationEventListeners.push_back(eventListener);
-	}
 	
-	/*!
-	* @brief	アニメーションイベントをリスナーに通知。
-	*/
-	void NotifyAnimationEventToListener(const wchar_t* clipName, const wchar_t* eventName)
-	{
-		for (auto& listener : m_animationEventListeners) {
-			listener(clipName, eventName);
-		}
-	}
 private:
 	void PlayCommon(AnimationClip* nextClip, float interpolateTime)
 	{
-		if (nextClip->IsLoaded() == false) {
-			//アニメーションクリップがロードされていない。
-			return;
-		}
 		int index = GetLastAnimationControllerIndex();
 		if (m_animationPlayController[index].GetAnimClip() == nextClip) {
 			return;
