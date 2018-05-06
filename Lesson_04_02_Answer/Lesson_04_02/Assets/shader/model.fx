@@ -99,6 +99,8 @@ PSInput VSMain( VSInputNmTxVcTangent In )
 
 /*!--------------------------------------------------------------------------------------
  * @brief	スキンありモデル用の頂点シェーダー。
+ * 全ての頂点に対してこのシェーダーが呼ばれる。
+ * Inは1つの頂点データ。VSInputNmTxWeightsを見てみよう。
 -------------------------------------------------------------------------------------- */
 PSInput VSMainSkin( VSInputNmTxWeights In ) 
 {
@@ -112,15 +114,18 @@ PSInput VSMainSkin( VSInputNmTxWeights In )
 	{
 	
 		float w = 0.0f;
-		[unroll]
 	    for (int i = 0; i < 3; i++)
 	    {
+			//boneMatrixにボーン行列が設定されていて、
+			//In.indicesは頂点に埋め込まれた、関連しているボーンの番号。
+			//In.weightsは頂点に埋め込まれた、関連しているボーンのウェイト。
 	        skinning += boneMatrix[In.Indices[i]] * In.Weights[i];
 	        w += In.Weights[i];
 	    }
-	    
+	    //最後のボーンを計算する。
 	    skinning += boneMatrix[In.Indices[3]] * (1.0f - w);
-	  	//スキン行列を乗算して、頂点をワールド空間に変換。
+	  	//頂点座標にスキン行列を乗算して、頂点をワールド空間に変換。
+		//mulは乗算命令。
 	    pos = mul(skinning, In.Position);
 	}
 	psInput.Normal = normalize( mul(skinning, In.Normal) );
@@ -131,7 +136,6 @@ PSInput VSMainSkin( VSInputNmTxWeights In )
 	psInput.Position = pos;
 	psInput.TexCoord = In.TexCoord;
     return psInput;
-
 }
 //--------------------------------------------------------------------------------------
 // ピクセルシェーダーのエントリ関数。
