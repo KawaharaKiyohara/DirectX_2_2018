@@ -46,7 +46,7 @@ void SkinModel::InitSkeleton(const wchar_t* filePath)
 		//読み込みに失敗することはあるので、ログ出力だけにしておく。
 #ifdef _DEBUG
 		char message[256];
-		sprintf(message, "tksファイルの読み込みに失敗しました。%s\n", skeletonFilePath.c_str());
+		sprintf(message, "tksファイルの読み込みに失敗しました。%ls\n", skeletonFilePath.c_str());
 		OutputDebugStringA(message);
 #endif
 	}

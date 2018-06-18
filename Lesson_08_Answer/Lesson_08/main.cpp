@@ -2,6 +2,7 @@
 #include "system/system.h"
 #include "Player.h"
 #include "Background.h"
+#include "Mikyna.h"
 
 ///////////////////////////////////////////////////////////////////
 // ウィンドウプログラムのメイン関数。
@@ -22,6 +23,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	//背景。
 	Background bg;
+
+	//みきゃん。
+	Mikyna mikyan;
 	//ゲームループ。
 	while (DispatchWindowMessage() == true)
 	{
@@ -37,16 +41,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		g_physics.Update();
 		//プレイヤーの更新。
 		player.Update();
-
 		//プレイヤーの描画。
 		player.Draw();
-
 		//背景を描画。
 		bg.Draw();
-
+		//みきゃんを描画。
+		mikyan.Draw();
 		//カメラの更新。
 		g_camera3D.Update();
-
 		//描画終了。
 		g_graphicsEngine->EndRender();
 	}

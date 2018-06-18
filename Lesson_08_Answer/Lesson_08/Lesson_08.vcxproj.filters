@@ -116,6 +116,9 @@
     <ClCompile Include="Background.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mikyna.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -202,12 +205,18 @@
     <ClInclude Include="Background.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mikyna.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MeshContentTask Include="Assets\modelData\unityChan.fbx">
       <Filter>Source Files\Assets\modelData</Filter>
     </MeshContentTask>
     <MeshContentTask Include="Assets\modelData\background.FBX">
+      <Filter>Source Files\Assets\modelData</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Assets\modelData\mikyan.FBX">
       <Filter>Source Files\Assets\modelData</Filter>
     </MeshContentTask>
   </ItemGroup>
