@@ -5,7 +5,7 @@
 Player::Player()
 {
 	//cmoファイルの読み込み。
-	m_model.Init(L"Assets/modelData/unityChan.cmo");
+	m_model.Init(L"Assets/modelData/unityChan.cmo", enFbxUpAxisY);
 
 	//tkaファイルの読み込み。
 	m_animationClips[0].Load(L"Assets/animData/walk.tka");
@@ -20,6 +20,10 @@ Player::Player()
 		m_animationClips,	//アニメーションクリップの配列。
 		2					//アニメーションクリップの数。
 	);
+
+	m_position.y = 100.0f;
+	//Hands-On 4 キャラクターコントローラーの初期化。
+	
 }
 
 
@@ -29,12 +33,11 @@ Player::~Player()
 
 void Player::Update()
 {
-	CVector3 moveSpeed = CVector3::Zero();
-	moveSpeed.x = g_pad[m_padNo].GetLStickXF() * -1.0f;
-	moveSpeed.z = g_pad[m_padNo].GetLStickYF() * -1.0f;
-
-	moveSpeed *= 5.0f;
-	m_position += moveSpeed;
+	m_moveSpeed.x = g_pad[0].GetLStickXF() * -300.0f;
+	m_moveSpeed.z = g_pad[0].GetLStickYF() * -300.0f;
+	m_moveSpeed.y -= 980.0f * ( 1.0f / 60.0f );
+	//Hands-On 4 キャラコンを使って移動する。
+	m_position += m_moveSpeed * ( 1.0 / 60.0f );
 
 	//ワールド行列の更新。
 	m_model.UpdateWorldMatrix(m_position, m_rotation, m_scale);
