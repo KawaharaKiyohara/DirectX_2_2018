@@ -397,7 +397,7 @@ rollout tkExporter "tkExporter" width:194 height:248
 				(
 					delete delObjArray[i]
 				)
-				parentBox = box length:20 width:20 height:20
+				parentBox = box length:1 width:1 height:1
 				p = convertToMesh(parentBox)
 				importObj.parent = parentBox
 				select p
