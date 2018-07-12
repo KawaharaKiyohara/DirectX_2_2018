@@ -43,18 +43,7 @@ void Player::Update()
 	//
 	//	CMatrix rotMatrix = m_model.GetRotationMatrix();
 	//
-	if (g_pad[0].IsPress(enButtonB) == true) {
-		CMatrix rotMatrix = m_model.GetRotationMatrix();
-		CVector3 forward;
-		forward.x = rotMatrix.m[2][0];
-		forward.y = rotMatrix.m[2][1];
-		forward.z = rotMatrix.m[2][2];
-		Bullet* bullet = g_game->GetBulletManager().NewBullet();
-		bullet->SetMoveSpeed(forward*10.0f);
-		CVector3 pos = m_position;
-		pos.y += 50.0f;
-		bullet->SetPosition(pos);
-	}
+	
 	if (g_pad[0].IsTrigger(enButtonA) == true
 		&& m_charaCon.IsOnGround() == true
 		) {
