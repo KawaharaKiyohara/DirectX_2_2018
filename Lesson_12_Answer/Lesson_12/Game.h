@@ -2,9 +2,10 @@
 
 //これらは前方宣言でいい。
 //詳しく知りたいならEffective C++を読むように。
-class Player;
-class GameCamera;
-class Level;
+#include "Player.h"
+#include "GameCamera.h"
+#include "Level/Level.h"
+
 class Enemy;
 struct PathPoint;
 
@@ -38,11 +39,11 @@ public:
 	}
 private:
 	//プレイヤー
-	Player * player = nullptr;
+	Player player;
 	//ゲームカメラ。
-	GameCamera* gameCamera = nullptr;
+	GameCamera gameCamera;
 	//レベルを初期化。
-	Level* level = nullptr;;
+	Level level;
 	std::vector< Enemy* > enemyList;		//エネミーのリスト。
 	std::vector< PathPoint* > path;		//パス。
 };

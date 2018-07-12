@@ -11,18 +11,16 @@ Game::Game()
 	//パスデータをリザーブ。
 	path.reserve(512);	//512もあれば十分やろう。
 						//レベルを構築する。
-	player = new Player;
-	level = new Level;
-	level->Init(L"Assets/level/stage_00.tkl", [&](LevelObjectData& objData) {
+	level.Init(L"Assets/level/stage_00.tkl", [&](LevelObjectData& objData) {
 		if (objData.EqualName(L"unityChan") == true) {
 			//Unityちゃん。
 			
-			player->SetPosition(objData.position);
+			player.SetPosition(objData.position);
 			return true;
 		}
 		else if (objData.EqualName(L"enemy") == true) {
 			//エネミー！！！
-			auto enemy = new Enemy(objData.position, objData.rotation, player);
+			auto enemy = new Enemy(objData.position, objData.rotation, &player);
 			enemyList.push_back(enemy);
 			return true;
 		}
@@ -47,8 +45,7 @@ Game::Game()
 		//右側のほうが小さい。
 		return lp->pointNo < rp->pointNo;
 	});
-	gameCamera = new GameCamera();
-	gameCamera->SetPlayer(player);
+	gameCamera.SetPlayer(&player);
 	
 }
 
@@ -56,9 +53,6 @@ Game::Game()
 Game::~Game()
 {
 	//動的に確保したインスタンスを破棄。
-	delete player;
-	delete level;
-	delete gameCamera;
 	for (auto& enemy : enemyList) {
 		delete enemy;
 	}
@@ -70,8 +64,8 @@ Game::~Game()
 void Game::Update()
 {
 	//プレイヤーの更新。
-	player->Update();
-	gameCamera->Update();
+	player.Update();
+	gameCamera.Update();
 	//Enemyを更新。
 	for (auto& enemy : enemyList) {
 		enemy->Update();
@@ -81,9 +75,9 @@ void Game::Update()
 void Game::Draw()
 {
 	//プレイヤーの描画。
-	player->Draw();
+	player.Draw();
 	//レベルを描画。
-	level->Draw();
+	level.Draw();
 	//Coinを描画。
 	for (auto& enemy : enemyList) {
 		enemy->Draw();
