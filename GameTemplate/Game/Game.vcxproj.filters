@@ -198,5 +198,8 @@
     <MeshContentTask Include="Assets\modelData\unityChan.fbx">
       <Filter>Assets\modelData</Filter>
     </MeshContentTask>
+    <MeshContentTask Include="Assets\modelData\ship.fbx">
+      <Filter>Assets\modelData</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>

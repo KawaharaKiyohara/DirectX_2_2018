@@ -1,13 +1,12 @@
 /*!
  * @brief	スケルトンエクスポーター。
  */
-
+ 
+pluginManager.loadClass FBXIMPORTER 
 pluginManager.loadClass FbxExporter
 
 --オブジェクトパラメータ。
 struct ObjectParam(
-	localPos,
-	localRot ,
 	objName,
 	bindPose,
 	invBindPose,
@@ -33,23 +32,24 @@ endFrame = 0
 
 rollout tkExporter "tkExporter" width:194 height:248
 (
-	editText 'animClipStartFrame' "" pos:[90,384] width:58 height:21 align:#left
-	label 'lbl1' "start frame" pos:[22,387] width:60 height:16 align:#left
-	groupBox 'grp1' "Animation clip" pos:[14,358] width:147 height:134 align:#left
-	button 'btn_saveAnimationClip' "Save" pos:[27,453] width:120 height:28 align:#left
-	label 'lbl2' "end frame" pos:[22,418] width:60 height:16 align:#left
-	editText 'animClipEndFrame' "" pos:[90,416] width:58 height:21 align:#left
-	button 'btn_saveSkeleton' "Save Skeleton" pos:[22,321] width:120 height:28 align:#left
-	label 'lbl3' "Label" pos:[33,440] width:0 height:0 align:#left
-	groupBox 'grp5' "FBX" pos:[13,13] width:145 height:64 align:#left
-	button 'btn_save_fbx' "Save" pos:[24,33] width:120 height:28 align:#left
-	groupBox 'grp10' "Level" pos:[13,92] width:145 height:189 align:#left
-	button 'btn_load_locObject' "Load Object" pos:[26,172] width:120 height:28 align:#left
-	editText 'levelName' "" pos:[23,138] width:120 height:24 align:#left
-	label 'lbl4' "edit level name" pos:[23,117] width:77 height:16 align:#left
-	button 'SaveLoc' "Save Level" pos:[26,242] width:120 height:28 align:#left
-	groupBox 'grp6' "Animation" pos:[3,295] width:164 height:200 align:#left
-	button 'btn_copy_locObject' "Copy Object" pos:[26,206] width:120 height:28 align:#left
+	editText 'animClipStartFrame' "" pos:[90,427] width:58 height:21 align:#left
+	label 'lbl1' "start frame" pos:[22,430] width:60 height:16 align:#left
+	groupBox 'grp1' "Animation clip" pos:[14,401] width:147 height:134 align:#left
+	button 'btn_saveAnimationClip' "Save" pos:[27,496] width:120 height:28 align:#left
+	label 'lbl2' "end frame" pos:[22,461] width:60 height:16 align:#left
+	editText 'animClipEndFrame' "" pos:[90,459] width:58 height:21 align:#left
+	button 'btn_saveSkeleton' "Save Skeleton" pos:[22,364] width:120 height:28 align:#left
+	label 'lbl3' "Label" pos:[33,423] width:0 height:0 align:#left
+	groupBox 'grp5' "FBX" pos:[13,13] width:145 height:109 align:#left
+	button 'btn_save_fbx' "Save" pos:[27,33] width:120 height:28 align:#left
+	groupBox 'grp10' "Level" pos:[13,135] width:145 height:189 align:#left
+	button 'btn_load_locObject' "Load Object" pos:[26,215] width:120 height:28 align:#left
+	editText 'levelName' "" pos:[23,181] width:120 height:24 align:#left
+	label 'lbl4' "edit level name" pos:[23,160] width:121 height:16 align:#left
+	button 'SaveLoc' "Save Level" pos:[26,285] width:120 height:28 align:#left
+	groupBox 'grp6' "Animation" pos:[3,338] width:164 height:200 align:#left
+	button 'btn_copy_locObject' "Copy Object" pos:[26,249] width:120 height:28 align:#left
+	button 'btn_save_selected_fbx' "Save Selected" pos:[27,79] width:120 height:28 align:#left
 	
 	on  tkExporter open do
 	(
@@ -61,7 +61,7 @@ rollout tkExporter "tkExporter" width:194 height:248
 	 */
 	fn BuildOutputNodeInfo n parentId= 
 	(
-		objParam = ObjectParam Point3 Quat "" Matrix3 Matrix3 -1 Node
+		objParam = ObjectParam "" Matrix3 Matrix3 -1 Node
 		objParam.objName = n.name
 		objParam.bindPose = n.transform
 		objParam.invBindPose = inverse n.transform
@@ -69,14 +69,9 @@ rollout tkExporter "tkExporter" width:194 height:248
 		if n.parent == undefined then(
 			--親がいない
 			objParam.parentId = -1
-			objParam.localPos = n.pos
-			objParam.localRot = n.rotation
-			
 		)else(
 			--親がいる
 			objParam.parentId = parentId
-			objParam.localPos = n.pos * inverse n.parent.transform
-			objParam.localRot = n.rotation * inverse n.parent.rotation
 		)
 
 		append g_objectParams objParam
@@ -88,6 +83,41 @@ rollout tkExporter "tkExporter" width:194 height:248
 	)
 	/*
 	 *  スケルトンの保存。
+	*@param[in]  filepath		保存するファイルパス。
+	 */
+	fn SaveSkeletonFilePath filepath = 
+	(
+		file = fopen filepath "wb"
+			
+		try(
+			--ヘッダーを出力
+			WriteLong file g_objectParams.count
+			
+			for o in g_objectParams do (
+				
+				WriteByte file o.objName.count
+				WriteString file o.objName
+				WriteLong file o.parentId
+				--バインドポーズを出力。
+				for i = 1 to 4 do(
+					WriteFloat file o.bindPose[i].x
+					WriteFloat file o.bindPose[i].y
+					WriteFloat file o.bindPose[i].z
+				)
+				--バインドポーズの逆数を出力。
+				for i = 1 to 4 do(
+					WriteFloat file o.invBindPose[i].x
+					WriteFloat file o.invBindPose[i].y
+					WriteFloat file o.invBindPose[i].z
+				)
+			)
+		)catch(
+			Messagebox "ファイルの保存に失敗しました"
+		)
+		FClose file
+	)
+	/*
+	 *  スケルトンの保存。
 	 */
 	fn SaveSkeleton = 
 	(
@@ -95,35 +125,7 @@ rollout tkExporter "tkExporter" width:194 height:248
 		
 		if filepath != undefined then
 		(
-			
-			file = fopen filepath "wb"
-			
-			try(
-				--ヘッダーを出力
-				WriteLong file g_objectParams.count
-				
-				for o in g_objectParams do (
-					
-					WriteByte file o.objName.count
-					WriteString file o.objName
-					WriteLong file o.parentId
-					--バインドポーズを出力。
-					for i = 1 to 4 do(
-						WriteFloat file o.bindPose[i].x
-						WriteFloat file o.bindPose[i].y
-						WriteFloat file o.bindPose[i].z
-					)
-					--バインドポーズの逆数を出力。
-					for i = 1 to 4 do(
-						WriteFloat file o.invBindPose[i].x
-						WriteFloat file o.invBindPose[i].y
-						WriteFloat file o.invBindPose[i].z
-					)
-				)
-			)catch(
-				Messagebox "ファイルの保存に失敗しました"
-			)
-			FClose file
+			SaveSkeletonFilePath filepath
 		)
 	)
 	/*
@@ -298,32 +300,74 @@ rollout tkExporter "tkExporter" width:194 height:248
 			)
 		)
 	)
+		/*
+	 *  スキンモディファイアが設定されているノードがあったら、そのノードに割り当てられているスケルトンのルートを取得。
+	 */
+	fn GetSkeletonRoot nodes =
+	(
+		for p in nodes do
+		(
+			--スキンモディファイアを取得。
+			skinMod = p.modifiers[skin]
+			
+			if skinMod != undefined then(
+				--スキンを見つけた。
+				clearSelection()
+				max modify mode
+				select p
+				modPanel.setCurrentObject skinMod
+				numBone = skinOps.GetNumberBones( skinMod )
+				if numBone > 0 then(
+					--bone発見したぞいぞい
+					boneName = skinOps.GetBoneName skinMod 1 1 
+					--名前からノードを選択
+					boneNode = getNodebyName(boneName)
+					if boneNode != undefined  then (
+						--スケルトンのルートを検索するぞ
+						while boneNode.parent != undefined  do(
+							boneNode = boneNode.parent
+						)
+						--ルートを返すん。
+						return boneNode
+					)
+				)
+			)
+		)
+		return undefined
+	)
 	/*
 	 *  アニメーションクリップの保存のボタンが押されたときの処理。
 	 */
 	on btn_saveAnimationClip pressed do
 	(
-		if selection[1] == undefined  then(
-			Messagebox "出力するアニメーションクリップを含むスケルトンのルートのオブジェクトを選択してください。"
-		)else(
-			--とりあえず全クリップ出力する。
-			g_objectParams = #()
-			--アニメーション時間を0にする。
-			startFrame = animClipStartFrame.text as integer
-			endFrame = animClipEndFrame.text as integer
-			animationRange = interval startFrame endFrame
-			slidertimer = 0
-			animate on(
-				--アニメーション進行中の処理。
-				BuildOutputNodeInfo selection[1] -1
-				try(
-					SaveAnimationClip()
-				)catch(
-					messageBox "ファイルの保存に失敗しました"
-				)
+		--とりあえず全クリップ出力する。
+		skeletonRoot = GetSkeletonRoot objects
+		
+		if skeletonRoot == undefined  then(
+			--シーンにスキンモディファイアが見つからなかった。
+			if selection[1] == undefined  then(
+				Messagebox "スケルトンのルートのオブジェクトの自動判別ができませんでした。\nスケルトンのルートのオブジェクトを選択してアニメーションクリップを保存してください。\n"
+				return 0
+			)
+			skeletonRoot = selection[1]
+		)
+		g_objectParams = #()
+		--アニメーション時間を0にする。
+		startFrame = animClipStartFrame.text as integer
+		endFrame = animClipEndFrame.text as integer
+		animationRange = interval startFrame endFrame
+		slidertimer = 0
+		animate on(
+			--アニメーション進行中の処理。
+			BuildOutputNodeInfo skeletonRoot -1
+			try(
+				SaveAnimationClip()
+			)catch(
+				messageBox "ファイルの保存に失敗しました"
 			)
 		)
 	)
+	
 	function selectHierarchy =
     (
 		for p in selection do
@@ -415,12 +459,103 @@ rollout tkExporter "tkExporter" width:194 height:248
 			)
 		)
 	)
+	/*
+	 *  FBX出力用の設定を行う。
+	 */
+	fn SetupFbxExportSettings = 
+	(
+		--他にもオプションが必要なら追加していってください。
+		FBXExporterSetParam "ResetExport"
+		FBXExporterSetParam "ScaleFactor" 1.0
+		FBXExporterSetParam "UpAxis" "Z"
+		FBXExporterSetParam "TangentSpaceExport" true
+		FBXExporterSetParam "Triangulate" true
+		FBXExporterSetParam "ASCII" true
+	)
+	/*
+	 *  マテリアルが貼られていないノードがないかチェックを行う。
+	 */
+	fn CheckMaterial nodes =
+	(
+		for p in nodes do
+		(
+			meshCount = GetTriMeshFaceCount(p)
+			if classof( p ) == BoneGeometry do(
+				--こいつはボーン
+				meshCount[1] = 0
+				meshCount[2] = 0
+			)
+			if meshCount[1] > 0 do
+			(
+				--メッシュがある。
+				if p.material == undefined do
+				(
+					--マテリアルが張られていない。
+					errorMessage = "エラー\n " + p.name + "にマテリアルが割り当てられていないため出力できません。\n"+ "マテリアルを割り当ててください。\n"
+					messagebox errorMessage
+					return false				
+				)
+			)
+		)
+		return true
+	)
+
+	/*
+	 *  スキンモディファイアが設定されているノードがあったら、スケルトンを出力する。
+	 */
+	fn TrySaveSkeleton nodes filePath = 
+	(
+		--スケルトンを選択出来たら取得する。
+		skeletonRoot = GetSkeletonRoot nodes
+		if skeletonRoot != undefined  then(
+			
+			--スケルトンを保存する。
+			g_objectParams = #()
+			--アニメーション時間を0にする。
+			animationRange = interval 0 animationRange.end
+			slidertime = 0
+			at time 0(
+				--アニメーション進行中の処理。
+				BuildOutputNodeInfo skeletonRoot -1
+				--ファイルパスの拡張子をtksに変更する。
+				extPos = findString filepath "."
+				filepath = replace filepath extPos 4 ".tks"
+				--保存だ―。
+				SaveSkeletonFilePath filepath
+			)
+		)
+	)
 	/*!
-	 * @brief	FBXの保存のボタンが押されたときの処理。
+	 * @brief	FBXのSaveのボタンが押されたときの処理。
 	 */
 	on btn_save_fbx pressed do
 	(
-		OpenFbxSetting()
+		if CheckMaterial(objects) then (
+			SetupFbxExportSettings()
+			
+			filepath = getSaveFileName caption:"" types: " (*.fbx)|*.fbx|All Files (*.*)|*.*|"
+			if filepath != undefined then(
+				exportFile(filepath) #noPrompt
+			)
+			--スキンモディファイアがある場合にスケルトンデータを保存する。
+			TrySaveSkeleton objects filepath
+		)
+	)
+	/*!
+	 * @brief	FBXのSave Selectedのボタンが押されたときの処理。
+	 */
+	on btn_save_selected_fbx pressed do
+	(
+		
+		if CheckMaterial(selection) then (
+			SetupFbxExportSettings()
+			filepath = getSaveFileName caption:"" types: " (*.fbx)|*.fbx|All Files (*.*)|*.*|"
+			if filepath != undefined then(
+				exportFile(filepath) #noPrompt selectedOnly:true
+			)
+			--スキンモディファイアがある場合にスケルトンデータを保存する。
+			TrySaveSkeleton selection filepath
+		)
 	)
 )
 addrollout tkExporter style:#(#style_titlebar, #style_sysmenu)
