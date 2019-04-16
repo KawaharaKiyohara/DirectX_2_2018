@@ -103,14 +103,10 @@ void Render()
 	///////////////////////////////////////////
 	//ここからモデル表示のプログラム。
 	//3Dモデルを描画する。
-	DirectX::CommonStates state(g_graphicsEngine->GetD3DDevice());
-	g_model->Draw(
-		g_graphicsEngine->GetD3DDeviceContext(),//D3Dデバイスコンテキスト。
-		state,									//レンダリングステート。今は気にしなくてよい。
-		g_worldMatrix,							//ワールド行列。
-		g_viewMatrix,							//ビュー行列。
-		g_projMatrix							//プロジェクション行列。
-	);
+	
+	
+	
+	
 	//ここまでモデル表示に関係するプログラム。
 	///////////////////////////////////////////
 	g_graphicsEngine->EndRender();
@@ -146,16 +142,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	/////////////////////////////////////////////////////////
 	//ここからcmoファイルのロードに関係するプログラム。
 	//エフェクトファクトリ。
-	DirectX::EffectFactory effectFactory(g_graphicsEngine->GetD3DDevice());
-	//テクスチャがあるフォルダを設定する。
-	effectFactory.SetDirectory(L"Resource/modelData");
-	//CMOファイルのロード。
-	g_model = DirectX::Model::CreateFromCMO(	//CMOファイルからモデルを作成する関数の、CreateFromCMOを実行する。
-		g_graphicsEngine->GetD3DDevice(),			//第一引数はD3Dデバイス。
-		L"Resource/modelData/teapot.cmo",			//第二引数は読み込むCMOファイルのファイルパス。
-		effectFactory,								//第三引数はエフェクトファクトリ。
-		false										//第四引数はCullモード。今は気にしなくてよい。
-	);
+
+
+
+
 	//ここまでcmoファイルのロードに関係するプログラム。
 	/////////////////////////////////////////////////////////
 	//メッセージ構造体の変数msgを初期化。
