@@ -142,6 +142,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	/////////////////////////////////////////////////////////
 	//ここからcmoファイルのロードに関係するプログラム。
 	//エフェクトファクトリ。
+	
+
 
 
 

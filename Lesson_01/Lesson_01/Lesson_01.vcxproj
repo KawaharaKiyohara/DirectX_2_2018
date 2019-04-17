@@ -190,6 +190,7 @@
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <MeshContentTask Include="..\..\Lesson_01_Answer\Lesson_01\Assets\modelData\UnityChan.FBX" />
     <MeshContentTask Include="Assets\modelData\teapot.FBX" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
