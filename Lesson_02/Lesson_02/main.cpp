@@ -112,7 +112,6 @@ void Render()
 	///////////////////////////////////////////
 	//ここからモデル表示のプログラム。
 	//3Dモデルを描画する。
-	DirectX::CommonStates state(g_graphicsEngine->GetD3DDevice());
 	g_teapotModel.Draw(
 		g_viewMatrix,							//ビュー行列。
 		g_projMatrix							//プロジェクション行列。
