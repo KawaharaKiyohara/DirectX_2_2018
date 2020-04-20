@@ -73,5 +73,8 @@
     <MeshContentTask Include="Assets\modelData\UnityChan.FBX">
       <Filter>Source Files\Assets\modelData</Filter>
     </MeshContentTask>
+    <MeshContentTask Include="..\..\Lesson_01_Answer\Lesson_01\Assets\modelData\star.FBX">
+      <Filter>Source Files\Assets\modelData</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>

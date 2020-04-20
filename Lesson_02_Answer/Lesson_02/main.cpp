@@ -7,20 +7,18 @@
 HWND			g_hWnd = NULL;				//ウィンドウハンドル。
 GraphicsEngine* g_graphicsEngine = NULL;	//グラフィックスエンジン。
 
-SkinModel g_teapotModel;						//ティーポットモデル。
-SkinModel g_unitchanModel;						//Unityちゃんモデル。
+
 
 CMatrix g_viewMatrix = CMatrix::Identity();		//ビュー行列。
 CMatrix g_projMatrix = CMatrix::Identity();		//プロジェクション行列。
-CMatrix g_worldMatrix = CMatrix::Identity();	//ワールド行列。
 
-///////////////////////////////////////////////////////////////////
-// DirectXの終了処理。
-///////////////////////////////////////////////////////////////////
-void ReleaseDirectX()
-{
-	
-}
+SkinModel g_teapotModel;						//ティーポットモデル。
+
+//Hands-On 2 ユニティちゃんを表示するための変数を追加。
+SkinModel g_unityChanModel;
+
+SkinModel g_starModel;
+
 ///////////////////////////////////////////////////////////////////
 //メッセージプロシージャ。
 //hWndがメッセージを送ってきたウィンドウのハンドル。
@@ -33,7 +31,6 @@ LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_DESTROY:
-		ReleaseDirectX();
 		PostQuitMessage(0);
 		break;	
 	default:
@@ -90,25 +87,6 @@ void InitWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, 
 }
 
 ///////////////////////////////////////////////////////////////////
-// 毎フレーム呼ばれるゲームの更新処理。
-///////////////////////////////////////////////////////////////////
-void Update()
-{
-	CVector3 pos = { -100.0f, 0.0f, 0.0f };
-	CQuaternion qRot = { 0.0f, 0.0f, 0.0f, 1.0f };
-	CVector3 scale = { 1.0f, 1.0f, 1.0f };
-	//座標 0, 0, 0, 回転　なし(単位クォータニオン), 拡大 等倍でワールド行列を更新する。
-	g_teapotModel.UpdateWorldMatrix(
-		pos,
-		qRot,
-		scale
-	);
-	pos.x = 100.0f; 
-	qRot.SetRotationDeg(CVector3::AxisX(), -90.0f);
-	g_unitchanModel.UpdateWorldMatrix(pos, qRot, scale);
-
-}
-///////////////////////////////////////////////////////////////////
 // 毎フレーム呼ばれるゲームの描画処理。
 ///////////////////////////////////////////////////////////////////
 void Render()
@@ -118,15 +96,43 @@ void Render()
 	///////////////////////////////////////////
 	//ここからモデル表示のプログラム。
 	//3Dモデルを描画する。
-	DirectX::CommonStates state(g_graphicsEngine->GetD3DDevice());
 	g_teapotModel.Draw(
 		g_viewMatrix,							//ビュー行列。
 		g_projMatrix							//プロジェクション行列。
 	);
-	g_unitchanModel.Draw(
-		g_viewMatrix,
+
+	//Hands-On 5 ユニティちゃんを表示するために、SkinModelのDraw関数を呼び出す。
+	CQuaternion unityRot;
+	unityRot.SetRotationDegX(-90.0f);
+
+	CVector3 unityScale = { 1.0f, 1.0f, 1.0f };
+
+	CVector3 unityPos;
+	unityPos.x = 200.0f;	//左に動かす。
+	unityPos.y = 0.0f;
+	unityPos.z = 0.0f;
+	
+	g_unityChanModel.UpdateWorldMatrix(unityPos, unityRot, unityScale);
+
+	//Hands-On 3 ユニティちゃんを表示するために、SkinModelのDraw関数を呼び出す。
+	g_unityChanModel.Draw(
+		g_viewMatrix, 
 		g_projMatrix
 	);
+
+	CQuaternion starRot;
+	starRot.SetRotationDegX(-90.0f);
+
+	CVector3 starScale = { 1.0f, 1.0f, 1.0f };
+
+	CVector3 starPos;
+	starPos.x = -200.0f;	//左に動かす。
+	starPos.y = 0.0f;
+	starPos.z = 0.0f;
+
+	g_starModel.UpdateWorldMatrix(starPos, starRot, starScale);
+
+	g_starModel.Draw( g_viewMatrix, g_projMatrix );
 	//ここまでモデル表示に関係するプログラム。
 	///////////////////////////////////////////
 	g_graphicsEngine->EndRender();
@@ -160,8 +166,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	);
 	/////////////////////////////////////////////////////////
 	//ティーポットモデルの初期化。
-	g_teapotModel.Init(L"Resource/modelData/teapot.cmo");
-	g_unitchanModel.Init(L"Resource/modelData/UnityChan.cmo");
+	g_teapotModel.Init(L"Assets/modelData/teapot.cmo");	
+
+	//Hands-On 2 cmoファイルをロードする。
+	g_unityChanModel.Init(L"Assets/modelData/unityChan.cmo");
+
+	g_starModel.Init(L"Assets/modelData/star.cmo");
 
 	//メッセージ構造体の変数msgを初期化。
 	MSG msg = { 0 };
@@ -174,8 +184,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			DispatchMessage(&msg);
 		}
 		else {
-			//更新処理。
-			Update();
 			//描画処理。
 			Render();
 		}

@@ -27,7 +27,7 @@ public:
 	*/
 	void Draw( CMatrix viewMatrix, CMatrix projMatrix );
 private:
-	CMatrix								m_worldMatrix;	//!<ワールド行列。
-	std::unique_ptr<DirectX::Model>		m_modelDx;		//!<DirectXTKが提供するモデルクラス。
+	CMatrix						m_worldMatrix;	//!<ワールド行列。
+	DirectX::ModelPtr		m_modelDx;		//!<DirectXTKが提供するモデルクラス。
 };
 

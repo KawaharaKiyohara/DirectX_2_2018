@@ -24,3 +24,6 @@
 const float FRAME_BUFFER_W = 1280.0f;				//フレームバッファの幅。
 const float FRAME_BUFFER_H = 720.0f;				//フレームバッファの高さ。
 extern GraphicsEngine* g_graphicsEngine;			//グラフィックスエンジン
+namespace DirectX {
+	using ModelPtr = std::unique_ptr<DirectX::Model>;
+}

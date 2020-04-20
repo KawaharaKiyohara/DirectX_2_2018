@@ -7,18 +7,14 @@
 HWND			g_hWnd = NULL;				//ウィンドウハンドル。
 GraphicsEngine* g_graphicsEngine = NULL;	//グラフィックスエンジン。
 
-SkinModel g_teapotModel;						//ティーポットモデル。
+
 
 CMatrix g_viewMatrix = CMatrix::Identity();		//ビュー行列。
 CMatrix g_projMatrix = CMatrix::Identity();		//プロジェクション行列。
 
-///////////////////////////////////////////////////////////////////
-// DirectXの終了処理。
-///////////////////////////////////////////////////////////////////
-void ReleaseDirectX()
-{
-	
-}
+SkinModel g_teapotModel;						//ティーポットモデル。
+
+
 ///////////////////////////////////////////////////////////////////
 //メッセージプロシージャ。
 //hWndがメッセージを送ってきたウィンドウのハンドル。
@@ -31,7 +27,6 @@ LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_DESTROY:
-		ReleaseDirectX();
 		PostQuitMessage(0);
 		break;	
 	default:
@@ -88,21 +83,6 @@ void InitWindow(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, 
 }
 
 ///////////////////////////////////////////////////////////////////
-// 毎フレーム呼ばれるゲームの更新処理。
-///////////////////////////////////////////////////////////////////
-void Update()
-{
-	CVector3 pos = { 0.0f, 0.0f, 0.0f };
-	CQuaternion qRot = { 0.0f, 0.0f, 0.0f, 1.0f };
-	CVector3 scale = { 1.0f, 1.0f, 1.0f };
-	//座標 0, 0, 0, 回転　なし(単位クォータニオン), 拡大 等倍でワールド行列を更新する。
-	g_teapotModel.UpdateWorldMatrix(
-		pos,
-		qRot,
-		scale
-	);
-}
-///////////////////////////////////////////////////////////////////
 // 毎フレーム呼ばれるゲームの描画処理。
 ///////////////////////////////////////////////////////////////////
 void Render()
@@ -117,6 +97,12 @@ void Render()
 		g_projMatrix							//プロジェクション行列。
 	);
 
+	//Hands-On 5 ユニティちゃんを表示するために、SkinModelのDraw関数を呼び出す。
+
+
+	//Hands-On 3 ユニティちゃんを表示するために、SkinModelのDraw関数を呼び出す。
+	
+	
 	//ここまでモデル表示に関係するプログラム。
 	///////////////////////////////////////////
 	g_graphicsEngine->EndRender();
@@ -150,8 +136,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	);
 	/////////////////////////////////////////////////////////
 	//ティーポットモデルの初期化。
-	g_teapotModel.Init(L"Resource/modelData/teapot.cmo");	
+	g_teapotModel.Init(L"Assets/modelData/teapot.cmo");	
 
+	//Hands-On 2 cmoファイルをロードする。
+	
 	//メッセージ構造体の変数msgを初期化。
 	MSG msg = { 0 };
 	while (WM_QUIT != msg.message)	//メッセージループ
@@ -163,8 +151,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			DispatchMessage(&msg);
 		}
 		else {
-			//更新処理。
-			Update();
 			//描画処理。
 			Render();
 		}

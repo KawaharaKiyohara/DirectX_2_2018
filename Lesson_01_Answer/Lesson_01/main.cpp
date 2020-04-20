@@ -215,8 +215,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//CMOファイルからモデルを作成する関数の、CreateFromCMOを実行する。
 	g_teapotModel = DirectX::Model::CreateFromCMO(
 		g_graphicsEngine->GetD3DDevice(),		//第一引数はD3Dデバイス。
-		L"Assets/modelData/teapot.cmo",	   //第二引数は読み込むCMOファイルのファイルパス。
-		effectFactory,									  //第三引数はエフェクトファクトリ。
+		L"Assets/modelData/teapot.cmo",		//第二引数は読み込むCMOファイルのファイルパス。
+		effectFactory,										//第三引数はエフェクトファクトリ。
 		false													//第四引数はCullモード。気にしなくてよい。
 	);
 
@@ -230,7 +230,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	g_starModel = DirectX::Model::CreateFromCMO(
 		g_graphicsEngine->GetD3DDevice(),		//第一引数はD3Dデバイス。
-		L"Assets/modelData/star.cmo",	//第二引数は読み込むCMOファイルのファイルパス。
+		L"Assets/modelData/star.cmo",			//第二引数は読み込むCMOファイルのファイルパス。
 		effectFactory,										//第三引数はエフェクトファクトリ。
 		false
 	);
