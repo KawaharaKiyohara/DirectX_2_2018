@@ -7,10 +7,20 @@
 HWND			g_hWnd = NULL;				//ウィンドウハンドル。
 GraphicsEngine* g_graphicsEngine = NULL;	//グラフィックスエンジン。
 
-std::unique_ptr<DirectX::Model> g_model;		//モデル。
-CMatrix g_viewMatrix = CMatrix::Identity();		//ビュー行列。
-CMatrix g_projMatrix = CMatrix::Identity();		//プロジェクション行列。
-CMatrix g_worldMatrix = CMatrix::Identity();	//ワールド行列。
+//カメラ関係の変数
+CMatrix g_viewMatrix;		//ビュー行列。
+CMatrix g_projMatrix;		//プロジェクション行列。
+
+//teapot関係の変数。
+DirectX::ModelPtr g_teapotModel;						//モデル。
+CMatrix g_teapotWorldMatrix;								//ワールド行列。
+
+//Hands-On-1 Step - 1. ユニティちゃんを表示するための変数を追加。
+DirectX::ModelPtr g_unityChanModel;	//モデル。
+CMatrix g_unityChanWorldMatrix;		//ワールド行列。
+
+DirectX::ModelPtr g_starModel;			//星のモデル。
+CMatrix g_starWorldMatrix;				//星のワールド行列。
 
 ///////////////////////////////////////////////////////////////////
 // DirectXの終了処理。
@@ -100,19 +110,70 @@ void Render()
 {
 	
 	g_graphicsEngine->BegineRender();
-	//X軸周りに-180°回す。
-	g_worldMatrix.MakeRotationX(CMath::PI * -0.5f);
 	///////////////////////////////////////////
 	//ここからモデル表示のプログラム。
 	//3Dモデルを描画する。
 	DirectX::CommonStates state(g_graphicsEngine->GetD3DDevice());
-	g_model->Draw(
+	g_teapotModel->Draw(
 		g_graphicsEngine->GetD3DDeviceContext(),//D3Dデバイスコンテキスト。
-		state,									//レンダリングステート。今は気にしなくてよい。
-		g_worldMatrix,							//ワールド行列。
-		g_viewMatrix,							//ビュー行列。
-		g_projMatrix							//プロジェクション行列。
+		state,								//レンダリングステート。今は気にしなくてよい。
+		g_teapotWorldMatrix,		//ワールド行列。
+		g_viewMatrix,					//ビュー行列。
+		g_projMatrix					//プロジェクション行列。
 	);
+	
+	//Hands-On 4 ユニティちゃんの表示位置を変更する。
+	CVector3 unityPos;
+	unityPos.x = 200.0f;	//左に動かす。
+	unityPos.y = 0.0f;
+	unityPos.z = 0.0f;
+	//ワールド行列を計算する。
+	g_unityChanWorldMatrix.MakeTranslation( unityPos );
+
+	//Hands-On 5 ユニティちゃんを回転させる。
+	//回転クォータニオンを作成する。
+	CQuaternion unityRot;
+	unityRot.SetRotationDegX(  -90.0f );
+	//回転クォータニオンから回転行列を作成。
+	CMatrix mRot;
+	mRot.MakeRotationFromQuaternion( unityRot );
+	//回転行列をワールド行列に掛け算する。
+	g_unityChanWorldMatrix *= mRot;
+
+	//Hands-On 3 ユニティちゃんを表示するためにDirectX::ModelPtrのDraw関数を呼び出す。
+	g_unityChanModel->Draw(
+		g_graphicsEngine->GetD3DDeviceContext(),//D3Dデバイスコンテキスト。
+		state,								//レンダリングステート。今は気にしなくてよい。
+		g_unityChanWorldMatrix,		//ワールド行列。
+		g_viewMatrix,					//ビュー行列。
+		g_projMatrix					//プロジェクション行列。
+	);
+
+	//星の
+	CVector3 starPos;
+	starPos.x = -200.0f;	//左に動かす。
+	starPos.y = 0.0f;
+	starPos.z = 0.0f;
+	//ワールド行列を計算する。
+	g_starWorldMatrix.MakeTranslation(starPos);
+
+	//回転クォータニオンから回転行列を作成。
+	//回転クォータニオンを作成する。
+	CQuaternion starRot;
+	starRot.SetRotationDegX(-90.0f);
+	CMatrix mStarRot;
+	mStarRot.MakeRotationFromQuaternion(starRot);
+	//回転行列をワールド行列に掛け算する。
+	g_starWorldMatrix *= mStarRot;
+
+	g_starModel->Draw(
+		g_graphicsEngine->GetD3DDeviceContext(),//D3Dデバイスコンテキスト。
+		state,								//レンダリングステート。今は気にしなくてよい。
+		g_starWorldMatrix,			//ワールド行列。
+		g_viewMatrix,					//ビュー行列。
+		g_projMatrix					//プロジェクション行列。
+	);
+
 	//ここまでモデル表示に関係するプログラム。
 	///////////////////////////////////////////
 	g_graphicsEngine->EndRender();
@@ -150,14 +211,30 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	//エフェクトファクトリ。
 	DirectX::EffectFactory effectFactory(g_graphicsEngine->GetD3DDevice());
 	//テクスチャがあるフォルダを設定する。
-	effectFactory.SetDirectory(L"Resource/modelData");
-	//CMOファイルのロード。
-	g_model = DirectX::Model::CreateFromCMO(	//CMOファイルからモデルを作成する関数の、CreateFromCMOを実行する。
-		g_graphicsEngine->GetD3DDevice(),			//第一引数はD3Dデバイス。
-		L"Resource/modelData/unityChan.cmo",		//第二引数は読み込むCMOファイルのファイルパス。
-		effectFactory,								//第三引数はエフェクトファクトリ。
-		false										//第四引数はCullモード。今は気にしなくてよい。
+	effectFactory.SetDirectory(L"Assets/modelData");
+	//CMOファイルからモデルを作成する関数の、CreateFromCMOを実行する。
+	g_teapotModel = DirectX::Model::CreateFromCMO(
+		g_graphicsEngine->GetD3DDevice(),		//第一引数はD3Dデバイス。
+		L"Assets/modelData/teapot.cmo",	   //第二引数は読み込むCMOファイルのファイルパス。
+		effectFactory,									  //第三引数はエフェクトファクトリ。
+		false													//第四引数はCullモード。気にしなくてよい。
 	);
+
+	//Hands-On 2 ユニティちゃんを表示するためにDirectX::ModelPtrのインスタンスを作成する。
+	g_unityChanModel = DirectX::Model::CreateFromCMO(
+		g_graphicsEngine->GetD3DDevice(),		//第一引数はD3Dデバイス。
+		L"Assets/modelData/unityChan.cmo",	//第二引数は読み込むCMOファイルのファイルパス。
+		effectFactory,										//第三引数はエフェクトファクトリ。
+		false													//第四引数はCullモード。気にしなくてよい。
+	);
+
+	g_starModel = DirectX::Model::CreateFromCMO(
+		g_graphicsEngine->GetD3DDevice(),		//第一引数はD3Dデバイス。
+		L"Assets/modelData/star.cmo",	//第二引数は読み込むCMOファイルのファイルパス。
+		effectFactory,										//第三引数はエフェクトファクトリ。
+		false
+	);
+
 	//ここまでcmoファイルのロードに関係するプログラム。
 	/////////////////////////////////////////////////////////
 	//メッセージ構造体の変数msgを初期化。

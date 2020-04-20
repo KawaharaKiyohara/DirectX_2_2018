@@ -61,7 +61,10 @@
     <MeshContentTask Include="Assets\modelData\teapot.FBX">
       <Filter>Source Files\Assets\modelData</Filter>
     </MeshContentTask>
-    <MeshContentTask Include="Assets\modelData\UnityChan.FBX">
+    <MeshContentTask Include="..\..\Lesson_01_Answer\Lesson_01\Assets\modelData\UnityChan.FBX">
+      <Filter>Source Files\Assets\modelData</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Assets\modelData\star.FBX">
       <Filter>Source Files\Assets\modelData</Filter>
     </MeshContentTask>
   </ItemGroup>

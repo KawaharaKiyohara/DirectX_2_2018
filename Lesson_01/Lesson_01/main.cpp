@@ -7,10 +7,15 @@
 HWND			g_hWnd = NULL;				//ウィンドウハンドル。
 GraphicsEngine* g_graphicsEngine = NULL;	//グラフィックスエンジン。
 
-std::unique_ptr<DirectX::Model> g_model;		//モデル。
-CMatrix g_viewMatrix = CMatrix::Identity();		//ビュー行列。
-CMatrix g_projMatrix = CMatrix::Identity();		//プロジェクション行列。
-CMatrix g_worldMatrix = CMatrix::Identity();	//ワールド行列。
+//カメラ関係の変数
+CMatrix g_viewMatrix;		//ビュー行列。
+CMatrix g_projMatrix;		//プロジェクション行列。
+
+//teapot関係の変数。
+DirectX::ModelPtr g_teapotModel;						//モデル。
+CMatrix g_teapotWorldMatrix;								//ワールド行列。
+
+//Hands-On-1 Step - 1. ユニティちゃんを表示するための変数を追加。
 
 ///////////////////////////////////////////////////////////////////
 // DirectXの終了処理。
@@ -103,10 +108,20 @@ void Render()
 	///////////////////////////////////////////
 	//ここからモデル表示のプログラム。
 	//3Dモデルを描画する。
+	DirectX::CommonStates state(g_graphicsEngine->GetD3DDevice());
+	g_teapotModel->Draw(
+		g_graphicsEngine->GetD3DDeviceContext(),//D3Dデバイスコンテキスト。
+		state,								//レンダリングステート。今は気にしなくてよい。
+		g_teapotWorldMatrix,		//ワールド行列。
+		g_viewMatrix,					//ビュー行列。
+		g_projMatrix					//プロジェクション行列。
+	);
 	
+	//Hands-On 4 ユニティちゃんの表示位置を変更する。
 	
-	
-	
+	//Hands-On 3 ユニティちゃんを表示するためにDirectX::ModelPtrのDraw関数を呼び出す。
+
+
 	//ここまでモデル表示に関係するプログラム。
 	///////////////////////////////////////////
 	g_graphicsEngine->EndRender();
@@ -142,11 +157,19 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	/////////////////////////////////////////////////////////
 	//ここからcmoファイルのロードに関係するプログラム。
 	//エフェクトファクトリ。
+	DirectX::EffectFactory effectFactory(g_graphicsEngine->GetD3DDevice());
+	//テクスチャがあるフォルダを設定する。
+	effectFactory.SetDirectory(L"Assets/modelData");
+	//CMOファイルからモデルを作成する関数の、CreateFromCMOを実行する。
+	g_teapotModel = DirectX::Model::CreateFromCMO(
+		g_graphicsEngine->GetD3DDevice(),		//第一引数はD3Dデバイス。
+		L"Assets/modelData/teapot.cmo",	   //第二引数は読み込むCMOファイルのファイルパス。
+		effectFactory,									  //第三引数はエフェクトファクトリ。
+		false													//第四引数はCullモード。気にしなくてよい。
+	);
+
+	//Hands-On 2 ユニティちゃんを表示するためにDirectX::ModelPtrのインスタンスを作成する。
 	
-
-
-
-
 
 	//ここまでcmoファイルのロードに関係するプログラム。
 	/////////////////////////////////////////////////////////

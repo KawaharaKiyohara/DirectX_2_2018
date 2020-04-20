@@ -30,6 +30,25 @@ public:
 		return DirectX::XMLoadFloat4x4(&mat);
 	}
 	CMatrix() {
+		m[0][0] = 1.0f;
+		m[0][1] = 0.0f;
+		m[0][2] = 0.0f;
+		m[0][3] = 0.0f;
+
+		m[1][0] = 0.0f;
+		m[1][1] = 1.0f;
+		m[1][2] = 0.0f;
+		m[1][3] = 0.0f;
+
+		m[2][0] = 0.0f;
+		m[2][1] = 0.0f;
+		m[2][2] = 1.0f;
+		m[2][3] = 0.0f;
+
+		m[3][0] = 0.0f;
+		m[3][1] = 0.0f;
+		m[3][2] = 0.0f;
+		m[3][3] = 1.0f;
 
 	}
 	CMatrix(float m00, float m01, float m02, float m03,
@@ -249,4 +268,25 @@ public:
 		);
 		return identity;
 	}
+	/*!
+		*@brief	s—ñ‚Ì‘ã“ü‰‰Zq
+		*@details
+		* this = this * _m;
+		*/
+	const CMatrix& operator*=(const CMatrix& _m)
+	{
+		Mul(*this, _m);
+		return *this;
+	}
 };
+/*
+* @brief	s—ñ“¯m‚ÌæZB
+* @details
+* æZ‚Í¶‚©‚ç‰E‚ÉŒü‚©‚Á‚Ä‚©‚©‚Á‚Ä‚¢‚­B
+*/
+static inline CMatrix operator*(const CMatrix & m1, const CMatrix m2)
+{
+	CMatrix mRet;
+	mRet.Mul(m1, m2);
+	return mRet;
+}

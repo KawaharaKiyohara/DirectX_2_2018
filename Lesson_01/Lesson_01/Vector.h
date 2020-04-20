@@ -69,7 +69,12 @@ public:
 		vec = _v.vec;
 		return *this;
 	}
-	CVector3() {}
+	CVector3() 
+	{
+		x = 0.0f;
+		y = 0.0f;
+		z = 0.0f;
+	}
 	/*!
 	* @brief	コンストラクタ。
 	*/
@@ -482,11 +487,27 @@ public:
 	CQuaternion(float x, float y, float z, float w) :
 		CVector4(x, y, z, w)
 	{
+		x = 0.0f;
+		y = 0.0f;
+		z = 0.0f;
+		w = 1.0f;
 	}
 	
 	/*!
 	 *@brief	任意の軸周りの回転クォータニオンを作成。
 	 */
+	void SetRotationX(float angle)
+	{
+		SetRotation(CVector3::AxisX(), angle);
+	}
+	void SetRotationY(float angle)
+	{
+		SetRotation(CVector3::AxisY(), angle);
+	}
+	void SetRotationZ(float angle)
+	{
+		SetRotation(CVector3::AxisZ(), angle);
+	}
 	void SetRotation( const CVector3& axis, float angle )
 	{
 		float s;
@@ -496,6 +517,33 @@ public:
 		x = axis.x * s;
 		y = axis.y * s;
 		z = axis.z * s;
+	}
+	/// <summary>
+	/// X軸周りの回転クォータニオンを作成。
+	/// </summary>
+	/// <param name="axis"></param>
+	/// <param name="angle"></param>
+	void SetRotationDegX( float angle )
+	{
+		SetRotationDeg( CVector3::AxisX(), angle );
+	}
+	/// <summary>
+	/// Y軸周りの回転クォータニオンを作成。
+	/// </summary>
+	/// <param name="axis"></param>
+	/// <param name="angle"></param>
+	void SetRotationDegY( float angle )
+	{
+		SetRotationDeg(CVector3::AxisY(), angle);
+	}
+	/// <summary>
+	/// Z軸周りの回転クォータニオンを作成。
+	/// </summary>
+	/// <param name="axis"></param>
+	/// <param name="angle"></param>
+	void SetRotationDegZ( float angle )
+	{
+		SetRotationDeg(CVector3::AxisZ(), angle);
 	}
 	void SetRotationDeg(const CVector3& axis, float angle)
 	{
