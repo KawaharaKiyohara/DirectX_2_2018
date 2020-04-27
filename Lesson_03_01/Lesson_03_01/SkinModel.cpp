@@ -1,11 +1,19 @@
 #include "stdafx.h"
 #include "SkinModel.h"
-#include "SkinModelDataManager.h"
 
 void SkinModel::Init(const wchar_t* filePath)
 {
-	//SkinModelDataManagerを使用してCMOファイルのロード。
-	m_modelDx = g_skinModelDataManager.Load(filePath);
+	//エフェクトファクトリ。
+	DirectX::EffectFactory effectFactory(g_graphicsEngine->GetD3DDevice());
+	//テクスチャがあるフォルダを設定する。
+	effectFactory.SetDirectory(L"Resource/modelData");
+	//CMOファイルのロード。
+	m_modelDx = DirectX::Model::CreateFromCMO(	//CMOファイルからモデルを作成する関数の、CreateFromCMOを実行する。
+		g_graphicsEngine->GetD3DDevice(),			//第一引数はD3Dデバイス。
+		filePath,									//第二引数は読み込むCMOファイルのファイルパス。
+		effectFactory,								//第三引数はエフェクトファクトリ。
+		false										//第四引数はCullモード。今は気にしなくてよい。
+	);
 }
 void SkinModel::UpdateWorldMatrix(CVector3 position, CQuaternion rotation, CVector3 scale)
 {
