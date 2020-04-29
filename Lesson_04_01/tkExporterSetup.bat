@@ -1,0 +1,18 @@
+@echo off
+
+@set CURRENT_DIR=%~dp0
+
+pushd %CURRENT_DIR%
+
+@rem maxScriptをコピー
+@copy "%CURRENT_DIR%\tkExporter.ms" "c:\Program Files\Autodesk\3ds Max 2017\scripts\"
+@copy "%CURRENT_DIR%\tkExporter.ms" "c:\Program Files\Autodesk\3ds Max 2018\scripts\"
+@copy "%CURRENT_DIR%\tkExporter.ms" "c:\Program Files\Autodesk\3ds Max 2019\scripts\"
+@copy "%CURRENT_DIR%\tkExporter.ms" "c:\Program Files\Autodesk\3ds Max 2020\scripts\"
+
+
+
+@popd
+@echo セットアップ終了
+
+@pause
