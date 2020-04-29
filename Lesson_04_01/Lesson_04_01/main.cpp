@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "graphics/SkinModel.h"
 //Hands-On 1 skeleton.hをインクルード。
-#include "graphics/Skeleton.h"
 
 ///////////////////////////////////////////////////////////////////
 // グローバル変数。
@@ -140,15 +139,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	);
 
 	//Hands-On 2 tksファイルをロード。
-	Skeleton skeleton;
-	skeleton.Load(L"Assets/modelData/unityChan.tks");
+
 	//Hands-On 3 ロードできていることを確認する。
-	int numBone = skeleton.GetNumBones();
-	for (int i = 0; i < numBone; i++) {
-		wchar_t boneName[256];
-		swprintf(boneName, L"%s\n", skeleton.GetBone(i)->GetName());
-		OutputDebugStringW(boneName);
-	}
+
 
 	//メッセージ構造体の変数msgを初期化。
 	MSG msg = { 0 };
