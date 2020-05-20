@@ -119,9 +119,4 @@
       <Filter>Source Files\graphics\animation</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <MeshContentTask Include="Assets\modelData\unityChan.fbx">
-      <Filter>Source Files\Assets\modelData</Filter>
-    </MeshContentTask>
-  </ItemGroup>
 </Project>
